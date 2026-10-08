@@ -1,1 +1,79 @@
-[]
+[
+  {
+    "id": "cat-wave",
+    "file": "images/cat-wave.png",
+    "title": "挥手猫",
+    "tags": [
+      "猫",
+      "日常"
+    ],
+    "date": "2026-10-08"
+  },
+  {
+    "id": "spark",
+    "file": "images/spark.png",
+    "title": "闪",
+    "tags": [
+      "反应"
+    ],
+    "date": "2026-10-07"
+  },
+  {
+    "id": "dog-ok",
+    "file": "images/dog-ok.png",
+    "title": "可以的",
+    "tags": [
+      "狗",
+      "反应"
+    ],
+    "date": "2026-10-06"
+  },
+  {
+    "id": "tea",
+    "file": "images/tea.png",
+    "title": "喝茶",
+    "tags": [
+      "日常",
+      "摸鱼"
+    ],
+    "date": "2026-10-05"
+  },
+  {
+    "id": "cat-sleep",
+    "file": "images/cat-sleep.png",
+    "title": "睡了",
+    "tags": [
+      "猫",
+      "摸鱼"
+    ],
+    "date": "2026-10-04"
+  },
+  {
+    "id": "thumbs",
+    "file": "images/thumbs.png",
+    "title": "赞",
+    "tags": [
+      "反应"
+    ],
+    "date": "2026-10-03"
+  },
+  {
+    "id": "fish",
+    "file": "images/fish.png",
+    "title": "摸鱼中",
+    "tags": [
+      "摸鱼",
+      "日常"
+    ],
+    "date": "2026-10-02"
+  },
+  {
+    "id": "moon",
+    "file": "images/moon.png",
+    "title": "晚安",
+    "tags": [
+      "日常"
+    ],
+    "date": "2026-09-28"
+  }
+]
