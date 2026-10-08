@@ -3,33 +3,41 @@
 
   var DATA_URL = "data/works.json";
   var ALL_LABEL = "全部";
+  var THEME_KEY = "theme";
 
+  var heroEl = document.getElementById("hero");
+  var heroImg = document.getElementById("hero-img");
+  var captionEl = document.getElementById("caption");
+  var tagsSection = document.getElementById("tags-section");
   var tagsEl = document.getElementById("tags");
-  var statusEl = document.getElementById("status");
-  var gridEl = document.getElementById("grid");
-  var lightboxEl = document.getElementById("lightbox");
-  var lightboxImg = document.getElementById("lightbox-img");
-  var lightboxTitle = document.getElementById("lightbox-title");
-  var lightboxTags = document.getElementById("lightbox-tags");
-  var lightboxDate = document.getElementById("lightbox-date");
+  var stripSection = document.getElementById("strip-section");
+  var stripEl = document.getElementById("strip");
+  var stripTrack = document.getElementById("strip-track");
+  var themeBtn = document.getElementById("theme-toggle");
 
   var works = [];
-  var lastFocus = null;
+  var selectedId = null;
+  var swapTimer = null;
 
-  function getTagFromHash() {
+  function parseHash() {
     var raw = location.hash.replace(/^#/, "");
-    if (!raw) return null;
-    var tag = new URLSearchParams(raw).get("tag");
-    return tag || null;
+    var params = new URLSearchParams(raw);
+    return {
+      tag: params.get("tag") || null,
+      work: params.get("work") || null
+    };
   }
 
-  function setTagInUrl(tag) {
-    var next = tag ? "#tag=" + encodeURIComponent(tag) : "";
+  function writeHash(tag, workId) {
+    var parts = [];
+    if (tag) parts.push("tag=" + encodeURIComponent(tag));
+    if (workId) parts.push("work=" + encodeURIComponent(workId));
+    var next = parts.length ? "#" + parts.join("&") : "";
     if ((location.hash || "") === next) return;
     if (next) {
-      location.hash = next.slice(1);
+      history.pushState(null, "", next);
     } else {
-      history.pushState("", document.title, location.pathname + location.search);
+      history.pushState(null, "", location.pathname + location.search);
     }
   }
 
@@ -56,160 +64,302 @@
     return parts[0] + "年" + Number(parts[1]) + "月" + Number(parts[2]) + "日";
   }
 
+  function formatStripDate(iso) {
+    if (!iso) return "";
+    var parts = iso.split("-");
+    if (parts.length !== 3) return iso;
+    return Number(parts[1]) + "月" + Number(parts[2]) + "日";
+  }
+
   function filteredWorks() {
-    var tag = getTagFromHash();
+    var tag = parseHash().tag;
     if (!tag) return works;
     return works.filter(function (work) {
       return (work.tags || []).indexOf(tag) !== -1;
     });
   }
 
-  function makeTagButton(label, count, active) {
-    var btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "tag" + (active ? " is-active" : "");
-    btn.setAttribute("aria-pressed", active ? "true" : "false");
-    btn.textContent = label;
-    if (typeof count === "number") {
-      var span = document.createElement("span");
-      span.className = "count";
-      span.textContent = String(count);
-      btn.appendChild(span);
+  function workById(id) {
+    for (var i = 0; i < works.length; i++) {
+      if (works[i].id === id) return works[i];
     }
-    return btn;
+    return null;
   }
 
-  function renderTags() {
-    var selected = getTagFromHash();
-    var items = countTags(works);
-    tagsEl.replaceChildren();
+  function resolveSelection() {
+    var hash = parseHash();
+    var list = filteredWorks();
+    if (!list.length) return null;
+    if (hash.work) {
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].id === hash.work) return list[i];
+      }
+    }
+    return list[0];
+  }
 
-    if (!works.length) {
-      tagsEl.hidden = true;
+  function isDark() {
+    var theme = document.documentElement.getAttribute("data-theme");
+    if (theme === "dark") return true;
+    if (theme === "light") return false;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+
+  function syncThemeButton() {
+    var dark = isDark();
+    themeBtn.textContent = dark ? "浅色" : "深色";
+    themeBtn.setAttribute("aria-label", dark ? "切换浅色模式" : "切换深色模式");
+  }
+
+  function setTheme(next) {
+    document.documentElement.classList.add("theme-transition");
+    document.documentElement.setAttribute("data-theme", next);
+    try {
+      localStorage.setItem(THEME_KEY, next);
+    } catch (e) {}
+    syncThemeButton();
+    window.setTimeout(function () {
+      document.documentElement.classList.remove("theme-transition");
+    }, 400);
+  }
+
+  function showHero(work) {
+    if (!work) {
+      heroEl.hidden = true;
+      heroImg.removeAttribute("src");
+      heroImg.removeAttribute("data-id");
+      return;
+    }
+    heroEl.hidden = false;
+    if (heroImg.getAttribute("data-id") === work.id) return;
+
+    var apply = function () {
+      heroImg.alt = work.title;
+      heroImg.src = work.file;
+      heroImg.setAttribute("data-id", work.id);
+      heroImg.classList.remove("is-swap");
+    };
+
+    if (!heroImg.getAttribute("src")) {
+      apply();
       return;
     }
 
-    tagsEl.hidden = false;
-
-    var allBtn = makeTagButton(ALL_LABEL, works.length, !selected);
-    allBtn.addEventListener("click", function () {
-      setTagInUrl(null);
-      render();
-    });
-    tagsEl.appendChild(allBtn);
-
-    items.forEach(function (item) {
-      var btn = makeTagButton(item.tag, item.count, selected === item.tag);
-      btn.addEventListener("click", function () {
-        setTagInUrl(item.tag);
-        render();
-      });
-      tagsEl.appendChild(btn);
-    });
+    heroImg.classList.add("is-swap");
+    window.clearTimeout(swapTimer);
+    var probe = new Image();
+    probe.onload = function () {
+      swapTimer = window.setTimeout(apply, 160);
+    };
+    probe.onerror = apply;
+    probe.src = work.file;
   }
 
-  function renderGrid() {
-    var list = filteredWorks();
-    var selected = getTagFromHash();
-    gridEl.replaceChildren();
+  function renderCaption(work, list) {
+    captionEl.replaceChildren();
+    captionEl.classList.remove("is-empty", "is-status");
 
     if (!works.length) {
-      gridEl.hidden = true;
-      statusEl.hidden = false;
-      statusEl.textContent = "还没有作品";
+      captionEl.classList.add("is-empty");
+      captionEl.textContent = "还没有作品。";
       return;
     }
 
     if (!list.length) {
-      gridEl.hidden = true;
-      statusEl.hidden = false;
-      statusEl.textContent = selected
-        ? "没有「" + selected + "」相关的作品"
-        : "还没有作品";
+      captionEl.classList.add("is-empty");
+      captionEl.textContent = "没有这个标签的作品。";
       return;
     }
 
-    statusEl.hidden = true;
-    gridEl.hidden = false;
+    if (!work) return;
 
-    list.forEach(function (work) {
-      var card = document.createElement("button");
-      card.type = "button";
-      card.className = "card";
-      card.setAttribute("aria-label", "查看「" + work.title + "」");
+    captionEl.appendChild(document.createTextNode(work.title));
+
+    if (work.date) {
+      var sep1 = document.createElement("span");
+      sep1.className = "sep";
+      sep1.textContent = " · ";
+      captionEl.appendChild(sep1);
+      var date = document.createElement("span");
+      date.className = "muted";
+      date.textContent = formatDate(work.date);
+      captionEl.appendChild(date);
+    }
+
+    (work.tags || []).forEach(function (tag) {
+      var sep = document.createElement("span");
+      sep.className = "sep";
+      sep.textContent = " · ";
+      captionEl.appendChild(sep);
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "muted";
+      btn.textContent = tag;
+      btn.addEventListener("click", function () {
+        selectTag(tag);
+      });
+      captionEl.appendChild(btn);
+    });
+  }
+
+  function renderTags() {
+    var selected = parseHash().tag;
+    tagsEl.replaceChildren();
+
+    if (!works.length) {
+      tagsSection.hidden = true;
+      return;
+    }
+
+    tagsSection.hidden = false;
+
+    function addRow(label, count, tagValue) {
+      var li = document.createElement("li");
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "row" + ((tagValue || null) === selected ? " is-active" : "");
+      btn.setAttribute("aria-pressed", btn.classList.contains("is-active") ? "true" : "false");
+
+      var title = document.createElement("span");
+      title.className = "title";
+      title.textContent = label;
+      var num = document.createElement("span");
+      num.className = "count";
+      num.textContent = String(count);
+      btn.appendChild(title);
+      btn.appendChild(num);
+      btn.addEventListener("click", function () {
+        selectTag(tagValue);
+      });
+      li.appendChild(btn);
+      tagsEl.appendChild(li);
+    }
+
+    addRow(ALL_LABEL, works.length, null);
+    countTags(works).forEach(function (item) {
+      addRow(item.tag, item.count, item.tag);
+    });
+  }
+
+  function renderStrip(list) {
+    stripTrack.replaceChildren();
+    if (!list.length) {
+      stripSection.hidden = true;
+      return;
+    }
+    stripSection.hidden = false;
+
+    list.slice().reverse().forEach(function (work) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "strip-item" + (work.id === selectedId ? " is-active" : "");
+      btn.setAttribute("aria-label", work.title);
+      btn.setAttribute("data-id", work.id);
+
+      var when = document.createElement("div");
+      when.className = "strip-when";
+      when.textContent = formatStripDate(work.date);
 
       var thumb = document.createElement("div");
-      thumb.className = "thumb";
-
+      thumb.className = "strip-thumb";
       var img = document.createElement("img");
-      img.alt = work.title;
+      img.alt = "";
       img.loading = "lazy";
       img.decoding = "async";
       img.src = work.file;
       thumb.appendChild(img);
 
-      var title = document.createElement("div");
-      title.className = "card-title";
-      title.textContent = work.title;
+      var name = document.createElement("div");
+      name.className = "strip-name";
+      name.textContent = work.title;
 
-      card.appendChild(thumb);
-      card.appendChild(title);
-      card.addEventListener("click", function () {
-        openLightbox(work, card);
-      });
-      gridEl.appendChild(card);
-    });
-  }
-
-  function render() {
-    renderTags();
-    renderGrid();
-  }
-
-  function openLightbox(work, source) {
-    lastFocus = source || document.activeElement;
-    lightboxImg.src = work.file;
-    lightboxImg.alt = work.title;
-    lightboxTitle.textContent = work.title;
-    lightboxDate.dateTime = work.date || "";
-    lightboxDate.textContent = formatDate(work.date);
-
-    lightboxTags.replaceChildren();
-    (work.tags || []).forEach(function (tag) {
-      var btn = makeTagButton(tag, null, false);
+      btn.appendChild(when);
+      btn.appendChild(thumb);
+      btn.appendChild(name);
       btn.addEventListener("click", function () {
-        closeLightbox();
-        setTagInUrl(tag);
-        render();
+        selectWork(work.id);
       });
-      lightboxTags.appendChild(btn);
+      stripTrack.appendChild(btn);
     });
 
-    lightboxEl.hidden = false;
-    document.body.style.overflow = "hidden";
-    lightboxEl.querySelector(".lightbox-close").focus();
-  }
-
-  function closeLightbox() {
-    if (lightboxEl.hidden) return;
-    lightboxEl.hidden = true;
-    document.body.style.overflow = "";
-    lightboxImg.removeAttribute("src");
-    if (lastFocus && typeof lastFocus.focus === "function") {
-      lastFocus.focus();
+    var active = stripTrack.querySelector(".strip-item.is-active");
+    if (active) {
+      active.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
     }
   }
 
-  lightboxEl.addEventListener("click", function (event) {
-    if (event.target.hasAttribute("data-close")) closeLightbox();
+  function render() {
+    var list = filteredWorks();
+    var work = resolveSelection();
+    selectedId = work ? work.id : null;
+    document.querySelector(".page").classList.toggle("is-empty", !works.length);
+    showHero(work);
+    renderCaption(work, list);
+    renderTags();
+    renderStrip(list);
+  }
+
+  function selectTag(tag) {
+    var current = parseHash();
+    var nextTag = tag || null;
+    var list = !nextTag
+      ? works
+      : works.filter(function (item) {
+          return (item.tags || []).indexOf(nextTag) !== -1;
+        });
+    var keep = list.some(function (item) {
+      return item.id === selectedId;
+    });
+    var nextWork = keep ? selectedId : list.length ? list[0].id : null;
+    writeHash(nextTag, nextWork);
+    render();
+  }
+
+  function selectWork(id) {
+    var current = parseHash();
+    var work = workById(id);
+    if (!work) return;
+    var tag = current.tag;
+    if (tag && (work.tags || []).indexOf(tag) === -1) tag = null;
+    writeHash(tag, id);
+    render();
+  }
+
+  function moveSelection(delta) {
+    var list = filteredWorks().slice().reverse();
+    if (list.length < 2) return;
+    var index = 0;
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].id === selectedId) {
+        index = i;
+        break;
+      }
+    }
+    var next = list[(index + delta + list.length) % list.length];
+    selectWork(next.id);
+  }
+
+  themeBtn.addEventListener("click", function () {
+    setTheme(isDark() ? "light" : "dark");
   });
 
   document.addEventListener("keydown", function (event) {
-    if (event.key === "Escape") closeLightbox();
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      moveSelection(-1);
+    } else if (event.key === "ArrowRight") {
+      event.preventDefault();
+      moveSelection(1);
+    }
   });
 
   window.addEventListener("hashchange", render);
   window.addEventListener("popstate", render);
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function () {
+    if (!document.documentElement.getAttribute("data-theme")) syncThemeButton();
+  });
+
+  syncThemeButton();
 
   fetch(DATA_URL, { cache: "no-store" })
     .then(function (res) {
@@ -226,9 +376,10 @@
     })
     .catch(function () {
       works = [];
-      statusEl.hidden = false;
-      statusEl.textContent = "作品列表加载失败";
-      gridEl.hidden = true;
-      tagsEl.hidden = true;
+      captionEl.classList.add("is-status");
+      captionEl.textContent = "作品列表加载失败。";
+      heroEl.hidden = true;
+      tagsSection.hidden = true;
+      stripSection.hidden = true;
     });
 })();
