@@ -104,19 +104,19 @@ img {
 }
 
 .hero {
-  width: clamp(15rem, 42vmin, 30rem);
-  height: clamp(15rem, 42vmin, 30rem);
   display: flex;
   align-items: center;
   justify-content: center;
+  min-height: 12rem;
 }
 
 .hero img {
-  max-width: 92%;
-  max-height: 92%;
   width: auto;
   height: auto;
+  max-width: min(100%, var(--hero-natural, 20rem));
+  max-height: min(70vh, var(--hero-natural, 20rem));
   object-fit: contain;
+  image-rendering: auto;
   opacity: 1;
   transition: opacity 0.25s ease;
 }
@@ -355,8 +355,11 @@ img {
   }
 
   .hero {
-    width: min(16.5rem, 72vw);
-    height: min(16.5rem, 72vw);
+    min-height: 10rem;
+  }
+
+  .strip.is-single .strip-track {
+    justify-content: center;
   }
 
   .intro {
