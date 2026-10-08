@@ -139,9 +139,6 @@
       heroImg.src = work.file;
       heroImg.setAttribute("data-id", work.id);
       heroImg.classList.remove("is-swap");
-      if (heroImg.complete && heroImg.naturalWidth) {
-        heroEl.style.setProperty("--hero-natural", heroImg.naturalWidth + "px");
-      }
     };
 
     if (!heroImg.getAttribute("src")) {
@@ -355,12 +352,6 @@
   window.addEventListener("popstate", render);
   window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function () {
     if (!document.documentElement.getAttribute("data-theme")) syncThemeButton();
-  });
-
-  heroImg.addEventListener("load", function () {
-    if (heroImg.naturalWidth) {
-      heroEl.style.setProperty("--hero-natural", heroImg.naturalWidth + "px");
-    }
   });
 
   syncThemeButton();
