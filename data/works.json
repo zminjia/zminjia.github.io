@@ -1,5 +1,12 @@
 [
   {
+    "id": "tongji-xuegao",
+    "file": "images/tongji-xuegao.webp",
+    "title": "同济雪糕",
+    "tags": ["同济", "雪糕", "校园"],
+    "date": "2026-10-08"
+  },
+  {
     "id": "qiuqiu-jiujiu",
     "file": "images/qiuqiu-jiujiu.png",
     "title": "啾啾",

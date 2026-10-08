@@ -364,8 +364,7 @@
     .then(function (data) {
       works = Array.isArray(data) ? data.slice() : [];
       works.sort(function (a, b) {
-        return String(b.date || "").localeCompare(String(a.date || "")) ||
-          String(a.id || "").localeCompare(String(b.id || ""));
+        return String(b.date || "").localeCompare(String(a.date || ""));
       });
       render();
     })
