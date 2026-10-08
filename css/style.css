@@ -59,17 +59,14 @@ body {
 
 body {
   font-family:
-    "PingFang SC",
-    "Hiragino Sans GB",
-    "Noto Sans SC",
-    "Source Han Sans SC",
-    "Microsoft YaHei UI",
-    "Microsoft YaHei",
-    system-ui,
-    -apple-system,
-    sans-serif;
+    "Noto Serif SC",
+    "Source Han Serif SC",
+    "Songti SC",
+    "STSong",
+    "SimSun",
+    serif;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 400;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -135,23 +132,29 @@ img {
 }
 
 .title {
-  font-size: clamp(1.5rem, 2.1vw, 2rem);
-  font-weight: 600;
-  line-height: 1.3;
-  letter-spacing: 0.02em;
+  font-weight: 900;
+  font-size: clamp(2rem, 4vw, 3.15rem);
+  line-height: 1.12;
+  letter-spacing: -0.035em;
+  transform: scaleX(0.88);
+  transform-origin: center;
 }
 
 .title.is-empty,
 .title.is-status {
   color: var(--color-secondary);
-  font-weight: 500;
+  font-weight: 700;
+  font-size: clamp(1.35rem, 2.4vw, 1.75rem);
+  letter-spacing: -0.02em;
+  transform: none;
 }
 
 .meta {
-  margin-top: 0.45rem;
+  margin-top: 0.5rem;
   color: var(--color-secondary);
   font-size: 0.9375rem;
-  font-weight: 500;
+  font-weight: 400;
+  letter-spacing: -0.02em;
   min-height: 1.4em;
 }
 
@@ -194,7 +197,8 @@ img {
   border-radius: 999px;
   padding: 0.28rem 0.8rem;
   font-size: 0.8125rem;
-  font-weight: 500;
+  font-weight: 400;
+  letter-spacing: -0.02em;
   line-height: 1.4;
   cursor: pointer;
   transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
@@ -208,6 +212,7 @@ img {
   background: var(--chip-active);
   border-color: var(--color-border);
   color: var(--color-text);
+  font-weight: 700;
 }
 
 .chip .count {
@@ -260,7 +265,8 @@ img {
   font-variant-numeric: tabular-nums;
   margin-bottom: 0.55rem;
   font-size: 0.75rem;
-  letter-spacing: 0.02em;
+  font-weight: 400;
+  letter-spacing: -0.02em;
 }
 
 .strip-thumb {
@@ -290,11 +296,14 @@ img {
 .strip-name {
   margin-top: 0.5rem;
   font-size: 0.8125rem;
-  font-weight: 500;
+  font-weight: 900;
+  letter-spacing: -0.03em;
   color: var(--color-faint);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  transform: scaleX(0.9);
+  transform-origin: center;
 }
 
 .strip-item.is-active .strip-name {
@@ -319,7 +328,8 @@ img {
   color: var(--color-secondary);
   padding: 0.35rem 0.85rem;
   font-size: 0.9375rem;
-  font-weight: 500;
+  font-weight: 400;
+  letter-spacing: -0.02em;
   line-height: 1.4;
   cursor: pointer;
   transition: color 0.15s ease;
@@ -370,7 +380,8 @@ img {
   }
 
   .title {
-    font-size: 1.375rem;
+    font-size: clamp(1.7rem, 8.2vw, 2.2rem);
+    transform: scaleX(0.9);
   }
 
   .tags {
