@@ -224,7 +224,7 @@ img {
   gap: 2rem;
   width: max-content;
   margin-inline: auto;
-  padding: 0.5rem max(1.5rem, calc(50vw - 5.5rem)) 1rem;
+  padding: 0.5rem max(4.75rem, calc(50vw - 5.5rem)) 2.75rem;
 }
 
 .strip-item {
