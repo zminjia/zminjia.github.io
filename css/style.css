@@ -193,6 +193,7 @@ img {
   max-height: calc(100vh - 48px);
   overflow: auto;
   background: var(--bg);
+  padding-top: 36px;
 }
 
 .lightbox-close {
@@ -200,8 +201,8 @@ img {
   top: 0;
   right: 0;
   z-index: 1;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border: 0;
   background: none;
   color: var(--muted);
