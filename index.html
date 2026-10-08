@@ -20,22 +20,25 @@
 </head>
 <body>
   <main class="page">
-    <div class="hero" id="hero" hidden>
-      <img id="hero-img" alt="">
-    </div>
-    <p class="caption" id="caption">加载中…</p>
+    <div class="stage">
+      <div class="hero" id="hero" hidden>
+        <img id="hero-img" alt="">
+      </div>
 
-    <section class="section" id="tags-section" hidden>
-      <h2 class="label">标签</h2>
-      <ul class="items" id="tags"></ul>
-    </section>
+      <header class="intro">
+        <h1 class="title" id="title">加载中…</h1>
+        <p class="meta" id="meta"></p>
+      </header>
+
+      <nav class="tags" id="tags" aria-label="按标签浏览" hidden></nav>
+
+      <section class="strip" id="strip-section" hidden aria-label="作品">
+        <div class="strip-scroller" id="strip">
+          <div class="strip-track" id="strip-track"></div>
+        </div>
+      </section>
+    </div>
   </main>
-
-  <section class="strip-section" id="strip-section" hidden aria-label="作品">
-    <div class="strip" id="strip">
-      <div class="strip-track" id="strip-track"></div>
-    </div>
-  </section>
 
   <button class="theme-toggle pill" id="theme-toggle" type="button" aria-label="切换深色模式">深色</button>
 

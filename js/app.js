@@ -7,13 +7,14 @@
 
   var heroEl = document.getElementById("hero");
   var heroImg = document.getElementById("hero-img");
-  var captionEl = document.getElementById("caption");
-  var tagsSection = document.getElementById("tags-section");
+  var titleEl = document.getElementById("title");
+  var metaEl = document.getElementById("meta");
   var tagsEl = document.getElementById("tags");
   var stripSection = document.getElementById("strip-section");
   var stripEl = document.getElementById("strip");
   var stripTrack = document.getElementById("strip-track");
   var themeBtn = document.getElementById("theme-toggle");
+  var pageEl = document.querySelector(".page");
 
   var works = [];
   var selectedId = null;
@@ -155,50 +156,46 @@
     probe.src = work.file;
   }
 
-  function renderCaption(work, list) {
-    captionEl.replaceChildren();
-    captionEl.classList.remove("is-empty", "is-status");
+  function renderIntro(work, list) {
+    titleEl.classList.remove("is-empty", "is-status");
+    metaEl.replaceChildren();
 
     if (!works.length) {
-      captionEl.classList.add("is-empty");
-      captionEl.textContent = "还没有作品。";
+      titleEl.classList.add("is-empty");
+      titleEl.textContent = "还没有作品。";
       return;
     }
 
     if (!list.length) {
-      captionEl.classList.add("is-empty");
-      captionEl.textContent = "没有这个标签的作品。";
+      titleEl.classList.add("is-empty");
+      titleEl.textContent = "没有这个标签的作品。";
       return;
     }
 
     if (!work) return;
 
-    captionEl.appendChild(document.createTextNode(work.title));
+    titleEl.textContent = work.title;
 
     if (work.date) {
-      var sep1 = document.createElement("span");
-      sep1.className = "sep";
-      sep1.textContent = " · ";
-      captionEl.appendChild(sep1);
       var date = document.createElement("span");
-      date.className = "muted";
       date.textContent = formatDate(work.date);
-      captionEl.appendChild(date);
+      metaEl.appendChild(date);
     }
 
-    (work.tags || []).forEach(function (tag) {
-      var sep = document.createElement("span");
-      sep.className = "sep";
-      sep.textContent = " · ";
-      captionEl.appendChild(sep);
+    (work.tags || []).forEach(function (tag, i) {
+      if (i > 0 || work.date) {
+        var sep = document.createElement("span");
+        sep.className = "sep";
+        sep.textContent = "·";
+        metaEl.appendChild(sep);
+      }
       var btn = document.createElement("button");
       btn.type = "button";
-      btn.className = "muted";
       btn.textContent = tag;
       btn.addEventListener("click", function () {
         selectTag(tag);
       });
-      captionEl.appendChild(btn);
+      metaEl.appendChild(btn);
     });
   }
 
@@ -207,37 +204,33 @@
     tagsEl.replaceChildren();
 
     if (!works.length) {
-      tagsSection.hidden = true;
+      tagsEl.hidden = true;
       return;
     }
 
-    tagsSection.hidden = false;
+    tagsEl.hidden = false;
 
-    function addRow(label, count, tagValue) {
-      var li = document.createElement("li");
+    function addChip(label, count, tagValue) {
       var btn = document.createElement("button");
       btn.type = "button";
-      btn.className = "row" + ((tagValue || null) === selected ? " is-active" : "");
+      btn.className = "chip" + ((tagValue || null) === selected ? " is-active" : "");
       btn.setAttribute("aria-pressed", btn.classList.contains("is-active") ? "true" : "false");
-
-      var title = document.createElement("span");
-      title.className = "title";
-      title.textContent = label;
+      var name = document.createElement("span");
+      name.textContent = label;
       var num = document.createElement("span");
       num.className = "count";
       num.textContent = String(count);
-      btn.appendChild(title);
+      btn.appendChild(name);
       btn.appendChild(num);
       btn.addEventListener("click", function () {
         selectTag(tagValue);
       });
-      li.appendChild(btn);
-      tagsEl.appendChild(li);
+      tagsEl.appendChild(btn);
     }
 
-    addRow(ALL_LABEL, works.length, null);
+    addChip(ALL_LABEL, works.length, null);
     countTags(works).forEach(function (item) {
-      addRow(item.tag, item.count, item.tag);
+      addChip(item.tag, item.count, item.tag);
     });
   }
 
@@ -283,8 +276,10 @@
     });
 
     var active = stripTrack.querySelector(".strip-item.is-active");
-    if (active) {
-      active.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+    if (active && stripEl) {
+      var scroller = stripEl;
+      var left = active.offsetLeft - (scroller.clientWidth - active.offsetWidth) / 2;
+      scroller.scrollTo({ left: Math.max(0, left), behavior: "smooth" });
     }
   }
 
@@ -292,15 +287,14 @@
     var list = filteredWorks();
     var work = resolveSelection();
     selectedId = work ? work.id : null;
-    document.querySelector(".page").classList.toggle("is-empty", !works.length);
+    pageEl.classList.toggle("is-empty", !works.length);
     showHero(work);
-    renderCaption(work, list);
+    renderIntro(work, list);
     renderTags();
     renderStrip(list);
   }
 
   function selectTag(tag) {
-    var current = parseHash();
     var nextTag = tag || null;
     var list = !nextTag
       ? works
@@ -376,10 +370,11 @@
     })
     .catch(function () {
       works = [];
-      captionEl.classList.add("is-status");
-      captionEl.textContent = "作品列表加载失败。";
+      titleEl.classList.add("is-status");
+      titleEl.textContent = "作品列表加载失败。";
+      metaEl.replaceChildren();
       heroEl.hidden = true;
-      tagsSection.hidden = true;
+      tagsEl.hidden = true;
       stripSection.hidden = true;
     });
 })();
