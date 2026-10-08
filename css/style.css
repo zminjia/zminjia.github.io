@@ -82,6 +82,14 @@ img {
   max-width: 100%;
 }
 
+.hero img,
+.strip-thumb img {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
 .page {
   min-height: 100vh;
   display: flex;
@@ -108,6 +116,14 @@ img {
   justify-content: center;
 }
 
+.hero-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  line-height: 0;
+  container-type: inline-size;
+}
+
 .hero img {
   width: 100%;
   height: 100%;
@@ -122,6 +138,32 @@ img {
 }
 
 .hero img.is-swap {
+  opacity: 0;
+}
+
+.hero-mark {
+  position: absolute;
+  right: clamp(0.35rem, 3.2cqi, 0.8rem);
+  bottom: clamp(0.28rem, 2.8cqi, 0.7rem);
+  z-index: 1;
+  pointer-events: none;
+  user-select: none;
+  font-weight: 900;
+  font-size: clamp(0.68rem, 6.2cqi, 1.05rem);
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: #fff;
+  opacity: 0.23;
+  text-shadow:
+    0 0 2px rgba(0, 0, 0, 0.85),
+    0 1px 3px rgba(0, 0, 0, 0.7),
+    0 0 8px rgba(0, 0, 0, 0.4);
+  transform: scaleX(0.92);
+  transform-origin: right bottom;
+  transition: opacity 0.25s ease;
+}
+
+.hero-frame:has(img.is-swap) .hero-mark {
   opacity: 0;
 }
 
@@ -349,6 +391,7 @@ img {
 
 @media (prefers-reduced-motion: reduce) {
   .hero img,
+  .hero-mark,
   .strip-thumb img,
   .chip,
   .meta button,

@@ -6,6 +6,7 @@
   var THEME_KEY = "theme";
 
   var heroEl = document.getElementById("hero");
+  var heroFrame = document.getElementById("hero-frame");
   var heroImg = document.getElementById("hero-img");
   var titleEl = document.getElementById("title");
   var metaEl = document.getElementById("meta");
@@ -124,6 +125,21 @@
     }, 400);
   }
 
+  function sizeHeroFrame() {
+    if (!heroFrame || !heroImg || heroEl.hidden || !heroImg.naturalWidth) return;
+    var boxW = heroEl.clientWidth;
+    var boxH = heroEl.clientHeight;
+    if (!boxW || !boxH) return;
+    var scale = Math.min(boxW / heroImg.naturalWidth, boxH / heroImg.naturalHeight);
+    heroFrame.style.width = Math.max(1, Math.round(heroImg.naturalWidth * scale)) + "px";
+    heroFrame.style.height = Math.max(1, Math.round(heroImg.naturalHeight * scale)) + "px";
+  }
+
+  function isGalleryImage(target) {
+    if (!target || !target.closest) return false;
+    return !!(target.closest(".hero-frame") || target.closest(".strip-thumb"));
+  }
+
   function showHero(work) {
     if (!work) {
       heroEl.hidden = true;
@@ -132,13 +148,17 @@
       return;
     }
     heroEl.hidden = false;
-    if (heroImg.getAttribute("data-id") === work.id) return;
+    if (heroImg.getAttribute("data-id") === work.id) {
+      sizeHeroFrame();
+      return;
+    }
 
     var apply = function () {
       heroImg.alt = work.title;
       heroImg.src = work.file;
       heroImg.setAttribute("data-id", work.id);
       heroImg.classList.remove("is-swap");
+      if (heroImg.complete && heroImg.naturalWidth) sizeHeroFrame();
     };
 
     if (!heroImg.getAttribute("src")) {
@@ -257,6 +277,7 @@
       thumb.className = "strip-thumb";
       var img = document.createElement("img");
       img.alt = "";
+      img.draggable = false;
       img.loading = "lazy";
       img.decoding = "async";
       img.src = work.file;
@@ -331,6 +352,21 @@
     }
     var next = list[(index + delta + list.length) % list.length];
     selectWork(next.id);
+  }
+
+  document.addEventListener("contextmenu", function (event) {
+    if (isGalleryImage(event.target)) event.preventDefault();
+  });
+
+  document.addEventListener("dragstart", function (event) {
+    if (isGalleryImage(event.target)) event.preventDefault();
+  });
+
+  heroImg.addEventListener("load", sizeHeroFrame);
+  if (window.ResizeObserver) {
+    new ResizeObserver(sizeHeroFrame).observe(heroEl);
+  } else {
+    window.addEventListener("resize", sizeHeroFrame);
   }
 
   themeBtn.addEventListener("click", function () {
