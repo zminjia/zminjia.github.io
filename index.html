@@ -24,19 +24,29 @@
 <body>
   <main class="page">
     <div class="stage">
-      <div class="hero" id="hero" hidden>
-        <div class="hero-frame" id="hero-frame">
-          <img id="hero-img" alt="" draggable="false">
-          <span class="hero-mark" aria-hidden="true">DaJia</span>
+      <div class="hero-row" id="hero-row" hidden>
+        <button class="hero-arrow" id="hero-prev" type="button" aria-label="上一张">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M14.5 4.5 7 12l7.5 7.5" />
+          </svg>
+        </button>
+        <div class="hero" id="hero">
+          <div class="hero-frame" id="hero-frame">
+            <img id="hero-img" alt="" draggable="false">
+            <span class="hero-mark" aria-hidden="true">DaJia</span>
+          </div>
         </div>
+        <button class="hero-arrow" id="hero-next" type="button" aria-label="下一张">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9.5 4.5 17 12l-7.5 7.5" />
+          </svg>
+        </button>
       </div>
 
       <header class="intro">
         <h1 class="title" id="title">加载中…</h1>
         <p class="meta" id="meta"></p>
       </header>
-
-      <nav class="tags" id="tags" aria-label="按标签浏览" hidden></nav>
 
       <section class="strip" id="strip-section" hidden aria-label="作品">
         <div class="strip-scroller" id="strip">

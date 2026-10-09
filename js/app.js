@@ -2,15 +2,17 @@
   "use strict";
 
   var DATA_URL = "data/works.json";
-  var ALL_LABEL = "全部";
   var THEME_KEY = "theme";
+  var SWIPE_MIN = 40;
 
+  var heroRow = document.getElementById("hero-row");
   var heroEl = document.getElementById("hero");
   var heroFrame = document.getElementById("hero-frame");
   var heroImg = document.getElementById("hero-img");
+  var heroPrev = document.getElementById("hero-prev");
+  var heroNext = document.getElementById("hero-next");
   var titleEl = document.getElementById("title");
   var metaEl = document.getElementById("meta");
-  var tagsEl = document.getElementById("tags");
   var stripSection = document.getElementById("strip-section");
   var stripEl = document.getElementById("strip");
   var stripTrack = document.getElementById("strip-track");
@@ -20,43 +22,26 @@
   var works = [];
   var selectedId = null;
   var swapTimer = null;
+  var touchStartX = 0;
+  var touchStartY = 0;
+  var touchActive = false;
 
   function parseHash() {
     var raw = location.hash.replace(/^#/, "");
     var params = new URLSearchParams(raw);
     return {
-      tag: params.get("tag") || null,
       work: params.get("work") || null
     };
   }
 
-  function writeHash(tag, workId) {
-    var parts = [];
-    if (tag) parts.push("tag=" + encodeURIComponent(tag));
-    if (workId) parts.push("work=" + encodeURIComponent(workId));
-    var next = parts.length ? "#" + parts.join("&") : "";
+  function writeHash(workId) {
+    var next = workId ? "#work=" + encodeURIComponent(workId) : "";
     if ((location.hash || "") === next) return;
     if (next) {
       history.pushState(null, "", next);
     } else {
       history.pushState(null, "", location.pathname + location.search);
     }
-  }
-
-  function countTags(list) {
-    var counts = {};
-    list.forEach(function (work) {
-      (work.tags || []).forEach(function (tag) {
-        counts[tag] = (counts[tag] || 0) + 1;
-      });
-    });
-    return Object.keys(counts)
-      .sort(function (a, b) {
-        return counts[b] - counts[a] || a.localeCompare(b, "zh-CN");
-      })
-      .map(function (tag) {
-        return { tag: tag, count: counts[tag] };
-      });
   }
 
   function formatDate(iso) {
@@ -73,12 +58,8 @@
     return Number(parts[1]) + "月" + Number(parts[2]) + "日";
   }
 
-  function filteredWorks() {
-    var tag = parseHash().tag;
-    if (!tag) return works;
-    return works.filter(function (work) {
-      return (work.tags || []).indexOf(tag) !== -1;
-    });
+  function timeline() {
+    return works.slice().reverse();
   }
 
   function workById(id) {
@@ -90,14 +71,12 @@
 
   function resolveSelection() {
     var hash = parseHash();
-    var list = filteredWorks();
-    if (!list.length) return null;
+    if (!works.length) return null;
     if (hash.work) {
-      for (var i = 0; i < list.length; i++) {
-        if (list[i].id === hash.work) return list[i];
-      }
+      var found = workById(hash.work);
+      if (found) return found;
     }
-    return list[0];
+    return works[0];
   }
 
   function isDark() {
@@ -126,7 +105,7 @@
   }
 
   function sizeHeroFrame() {
-    if (!heroFrame || !heroImg || heroEl.hidden || !heroImg.naturalWidth) return;
+    if (!heroFrame || !heroImg || heroRow.hidden || !heroImg.naturalWidth) return;
     var boxW = heroEl.clientWidth;
     var boxH = heroEl.clientHeight;
     if (!boxW || !boxH) return;
@@ -142,12 +121,15 @@
 
   function showHero(work) {
     if (!work) {
-      heroEl.hidden = true;
+      heroRow.hidden = true;
       heroImg.removeAttribute("src");
       heroImg.removeAttribute("data-id");
       return;
     }
-    heroEl.hidden = false;
+    heroRow.hidden = false;
+    var showArrows = works.length > 1;
+    heroPrev.hidden = !showArrows;
+    heroNext.hidden = !showArrows;
     if (heroImg.getAttribute("data-id") === work.id) {
       sizeHeroFrame();
       return;
@@ -176,19 +158,13 @@
     probe.src = work.file;
   }
 
-  function renderIntro(work, list) {
+  function renderIntro(work) {
     titleEl.classList.remove("is-empty", "is-status");
     metaEl.replaceChildren();
 
     if (!works.length) {
       titleEl.classList.add("is-empty");
       titleEl.textContent = "还没有作品。";
-      return;
-    }
-
-    if (!list.length) {
-      titleEl.classList.add("is-empty");
-      titleEl.textContent = "没有这个标签的作品。";
       return;
     }
 
@@ -209,61 +185,49 @@
         sep.textContent = "·";
         metaEl.appendChild(sep);
       }
-      var btn = document.createElement("button");
-      btn.type = "button";
-      btn.textContent = tag;
-      btn.addEventListener("click", function () {
-        selectTag(tag);
-      });
-      metaEl.appendChild(btn);
+      var item = document.createElement("span");
+      item.textContent = tag;
+      metaEl.appendChild(item);
     });
   }
 
-  function renderTags() {
-    var selected = parseHash().tag;
-    tagsEl.replaceChildren();
+  function stripMatchesWorks() {
+    var items = stripTrack.querySelectorAll(".strip-item");
+    if (items.length !== works.length) return false;
+    for (var i = 0; i < works.length; i++) {
+      if (items[i].getAttribute("data-id") !== works[works.length - 1 - i].id) return false;
+    }
+    return true;
+  }
 
+  function scrollActiveIntoView() {
+    var active = stripTrack.querySelector(".strip-item.is-active");
+    if (active && stripEl) {
+      var left = active.offsetLeft - (stripEl.clientWidth - active.offsetWidth) / 2;
+      stripEl.scrollTo({ left: Math.max(0, left), behavior: "smooth" });
+    }
+  }
+
+  function renderStrip() {
     if (!works.length) {
-      tagsEl.hidden = true;
-      return;
-    }
-
-    tagsEl.hidden = false;
-
-    function addChip(label, count, tagValue) {
-      var btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "chip" + ((tagValue || null) === selected ? " is-active" : "");
-      btn.setAttribute("aria-pressed", btn.classList.contains("is-active") ? "true" : "false");
-      var name = document.createElement("span");
-      name.textContent = label;
-      var num = document.createElement("span");
-      num.className = "count";
-      num.textContent = String(count);
-      btn.appendChild(name);
-      btn.appendChild(num);
-      btn.addEventListener("click", function () {
-        selectTag(tagValue);
-      });
-      tagsEl.appendChild(btn);
-    }
-
-    addChip(ALL_LABEL, works.length, null);
-    countTags(works).forEach(function (item) {
-      addChip(item.tag, item.count, item.tag);
-    });
-  }
-
-  function renderStrip(list) {
-    stripTrack.replaceChildren();
-    if (!list.length) {
+      stripTrack.replaceChildren();
       stripSection.hidden = true;
       return;
     }
     stripSection.hidden = false;
-    stripSection.classList.toggle("is-single", list.length === 1);
+    stripSection.classList.toggle("is-single", works.length === 1);
 
-    list.slice().reverse().forEach(function (work) {
+    if (stripMatchesWorks()) {
+      var items = stripTrack.querySelectorAll(".strip-item");
+      for (var i = 0; i < items.length; i++) {
+        items[i].classList.toggle("is-active", items[i].getAttribute("data-id") === selectedId);
+      }
+      scrollActiveIntoView();
+      return;
+    }
+
+    stripTrack.replaceChildren();
+    works.slice().reverse().forEach(function (work) {
       var btn = document.createElement("button");
       btn.type = "button";
       btn.className = "strip-item" + (work.id === selectedId ? " is-active" : "");
@@ -297,52 +261,27 @@
       stripTrack.appendChild(btn);
     });
 
-    var active = stripTrack.querySelector(".strip-item.is-active");
-    if (active && stripEl) {
-      var scroller = stripEl;
-      var left = active.offsetLeft - (scroller.clientWidth - active.offsetWidth) / 2;
-      scroller.scrollTo({ left: Math.max(0, left), behavior: "smooth" });
-    }
+    scrollActiveIntoView();
   }
 
   function render() {
-    var list = filteredWorks();
     var work = resolveSelection();
     selectedId = work ? work.id : null;
     pageEl.classList.toggle("is-empty", !works.length);
     showHero(work);
-    renderIntro(work, list);
-    renderTags();
-    renderStrip(list);
-  }
-
-  function selectTag(tag) {
-    var nextTag = tag || null;
-    var list = !nextTag
-      ? works
-      : works.filter(function (item) {
-          return (item.tags || []).indexOf(nextTag) !== -1;
-        });
-    var keep = list.some(function (item) {
-      return item.id === selectedId;
-    });
-    var nextWork = keep ? selectedId : list.length ? list[0].id : null;
-    writeHash(nextTag, nextWork);
-    render();
+    renderIntro(work);
+    renderStrip();
   }
 
   function selectWork(id) {
-    var current = parseHash();
     var work = workById(id);
     if (!work) return;
-    var tag = current.tag;
-    if (tag && (work.tags || []).indexOf(tag) === -1) tag = null;
-    writeHash(tag, id);
+    writeHash(id);
     render();
   }
 
   function moveSelection(delta) {
-    var list = filteredWorks().slice().reverse();
+    var list = timeline();
     if (list.length < 2) return;
     var index = 0;
     for (var i = 0; i < list.length; i++) {
@@ -374,7 +313,42 @@
     setTheme(isDark() ? "light" : "dark");
   });
 
+  heroPrev.addEventListener("click", function () {
+    moveSelection(-1);
+  });
+  heroNext.addEventListener("click", function () {
+    moveSelection(1);
+  });
+
+  heroRow.addEventListener(
+    "touchstart",
+    function (event) {
+      if (event.touches.length !== 1 || works.length < 2) {
+        touchActive = false;
+        return;
+      }
+      touchActive = true;
+      touchStartX = event.touches[0].clientX;
+      touchStartY = event.touches[0].clientY;
+    },
+    { passive: true }
+  );
+
+  heroRow.addEventListener(
+    "touchend",
+    function (event) {
+      if (!touchActive || event.changedTouches.length !== 1) return;
+      touchActive = false;
+      var dx = event.changedTouches[0].clientX - touchStartX;
+      var dy = event.changedTouches[0].clientY - touchStartY;
+      if (Math.abs(dx) < SWIPE_MIN || Math.abs(dx) < Math.abs(dy) * 1.4) return;
+      moveSelection(dx < 0 ? 1 : -1);
+    },
+    { passive: true }
+  );
+
   document.addEventListener("keydown", function (event) {
+    if (event.metaKey || event.ctrlKey || event.altKey) return;
     if (event.key === "ArrowLeft") {
       event.preventDefault();
       moveSelection(-1);
@@ -409,8 +383,7 @@
       titleEl.classList.add("is-status");
       titleEl.textContent = "作品列表加载失败。";
       metaEl.replaceChildren();
-      heroEl.hidden = true;
-      tagsEl.hidden = true;
+      heroRow.hidden = true;
       stripSection.hidden = true;
     });
 })();

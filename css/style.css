@@ -5,7 +5,6 @@
   --color-faint: #b0b0b0;
   --color-border: #ececec;
   --color-bg: #ffffff;
-  --chip-active: #f2f2f2;
   --space: 8px;
   --stage: 56rem;
 }
@@ -17,7 +16,6 @@
     --color-faint: #6e6e6e;
     --color-border: #2a2a2a;
     --color-bg: #111111;
-    --chip-active: #222222;
   }
 }
 
@@ -28,7 +26,6 @@
   --color-faint: #6e6e6e;
   --color-border: #2a2a2a;
   --color-bg: #111111;
-  --chip-active: #222222;
 }
 
 :root[data-theme="light"] {
@@ -108,12 +105,53 @@ img {
   align-items: center;
 }
 
+.hero-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+}
+
 .hero {
-  width: min(58vh, 100%);
+  width: min(58vh, calc(100% - 5.75rem));
   aspect-ratio: 1;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex: 0 1 auto;
+}
+
+.hero-arrow {
+  appearance: none;
+  flex: 0 0 2.75rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--color-faint);
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.hero-arrow:hover,
+.hero-arrow:focus-visible {
+  color: var(--color-text);
+}
+
+.hero-arrow svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.35;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .hero-frame {
@@ -200,70 +238,9 @@ img {
   min-height: 1.4em;
 }
 
-.meta button {
-  background: none;
-  border: 0;
-  padding: 0;
-  color: inherit;
-  cursor: pointer;
-  font: inherit;
-  transition: color 0.15s ease;
-}
-
-.meta button:hover {
-  color: var(--color-text);
-}
-
 .meta .sep {
   color: var(--color-faint);
   margin: 0 0.35em;
-}
-
-.tags {
-  width: 100%;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.45rem;
-  margin-top: 1.5rem;
-}
-
-.chip {
-  appearance: none;
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.3em;
-  border: 1px solid var(--color-border);
-  background: transparent;
-  color: var(--color-secondary);
-  border-radius: 999px;
-  padding: 0.28rem 0.8rem;
-  font-size: 0.8125rem;
-  font-weight: 400;
-  letter-spacing: -0.02em;
-  line-height: 1.4;
-  cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-}
-
-.chip:hover {
-  color: var(--color-text);
-}
-
-.chip.is-active {
-  background: var(--chip-active);
-  border-color: var(--color-border);
-  color: var(--color-text);
-  font-weight: 700;
-}
-
-.chip .count {
-  color: var(--color-faint);
-  font-variant-numeric: tabular-nums;
-}
-
-.chip.is-active .count {
-  color: var(--color-secondary);
 }
 
 .strip {
@@ -381,10 +358,9 @@ img {
   color: var(--color-text);
 }
 
-.chip:focus-visible,
+.hero-arrow:focus-visible,
 .theme-toggle:focus-visible,
-.strip-item:focus-visible,
-.meta button:focus-visible {
+.strip-item:focus-visible {
   outline: 2px solid var(--color-secondary);
   outline-offset: 3px;
 }
@@ -392,9 +368,8 @@ img {
 @media (prefers-reduced-motion: reduce) {
   .hero img,
   .hero-mark,
+  .hero-arrow,
   .strip-thumb img,
-  .chip,
-  .meta button,
   .theme-toggle,
   :root.theme-transition,
   :root.theme-transition *,
@@ -411,7 +386,7 @@ img {
   }
 
   .hero {
-    width: 100%;
+    width: min(58vh, calc(100% - 5.75rem));
   }
 
   .strip.is-single .strip-track {
@@ -425,16 +400,6 @@ img {
   .title {
     font-size: clamp(1.7rem, 8.2vw, 2.2rem);
     transform: scaleX(0.9);
-  }
-
-  .tags {
-    margin-top: 1.2rem;
-    gap: 0.35rem;
-  }
-
-  .chip {
-    padding: 0.22rem 0.62rem;
-    font-size: 0.75rem;
   }
 
   .strip {
