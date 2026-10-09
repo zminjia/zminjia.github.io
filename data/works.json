@@ -1,5 +1,47 @@
 [
   {
+    "id": "xiaoshe",
+    "file": "images/xiaoshe.webp",
+    "title": "嗷呜小蛇",
+    "tags": ["小蛇", "黏土", "可爱"],
+    "date": "2026-10-09"
+  },
+  {
+    "id": "riben-jianzhi",
+    "file": "images/riben-jianzhi.webp",
+    "title": "和纸娃娃",
+    "tags": ["剪纸", "和服", "娃娃"],
+    "date": "2026-10-09"
+  },
+  {
+    "id": "xiaoshipin",
+    "file": "images/xiaoshipin.webp",
+    "title": "小凤冠",
+    "tags": ["凤冠", "饰品", "华丽"],
+    "date": "2026-10-09"
+  },
+  {
+    "id": "shuihu",
+    "file": "images/shuihu.webp",
+    "title": "加油水壶",
+    "tags": ["水壶", "棒球", "日常"],
+    "date": "2026-10-09"
+  },
+  {
+    "id": "xuehua-lazhu",
+    "file": "images/xuehua-lazhu.webp",
+    "title": "雪花蜡烛",
+    "tags": ["蜡烛", "雪花", "手作"],
+    "date": "2026-10-09"
+  },
+  {
+    "id": "xiaodiezi",
+    "file": "images/xiaodiezi.webp",
+    "title": "蓝月小碟",
+    "tags": ["碟子", "手作", "蓝色"],
+    "date": "2026-10-09"
+  },
+  {
     "id": "tongji-xuegao",
     "file": "images/tongji-xuegao.webp",
     "title": "同济雪糕",
