@@ -444,7 +444,7 @@ img {
   .strip-track {
     justify-content: flex-start;
     gap: 1rem;
-    padding-inline: 0.15rem;
+    padding-inline: 4.75rem 0.75rem;
   }
 
   .strip-item,
