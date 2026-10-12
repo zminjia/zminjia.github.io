@@ -1,5 +1,96 @@
 [
   {
+    "id": "zhalie-qiuqiu",
+    "file": "images/zhalie-qiuqiu.webp",
+    "title": "炸毛球球",
+    "tags": ["球球", "鹦鹉", "炸毛"],
+    "date": "2026-10-12"
+  },
+  {
+    "id": "b-ren",
+    "file": "images/b-ren.webp",
+    "title": "B人",
+    "tags": ["小电视", "公仔", "B站"],
+    "date": "2026-10-12"
+  },
+  {
+    "id": "ruixing-lengcui",
+    "file": "images/ruixing-lengcui.webp",
+    "title": "瑞幸冷萃",
+    "tags": ["瑞幸", "冷萃", "咖啡"],
+    "date": "2026-10-12"
+  },
+  {
+    "id": "bei-kun-pangxie",
+    "file": "images/bei-kun-pangxie.webp",
+    "title": "五花大绑",
+    "tags": ["螃蟹", "大闸蟹", "美食"],
+    "date": "2026-10-12"
+  },
+  {
+    "id": "motuoche",
+    "file": "images/motuoche.webp",
+    "title": "黑色机车",
+    "tags": ["摩托车", "机车", "酷"],
+    "date": "2026-10-12"
+  },
+  {
+    "id": "mccafe-xingxing",
+    "file": "images/mccafe-xingxing.webp",
+    "title": "醒醒",
+    "tags": ["McCafé", "咖啡", "打工人"],
+    "date": "2026-10-11"
+  },
+  {
+    "id": "mccafe-diyibei",
+    "file": "images/mccafe-diyibei.webp",
+    "title": "第一杯",
+    "tags": ["McCafé", "咖啡", "早安"],
+    "date": "2026-10-11"
+  },
+  {
+    "id": "mccafe-xumingzhong",
+    "file": "images/mccafe-xumingzhong.webp",
+    "title": "续命中",
+    "tags": ["McCafé", "咖啡", "打工人"],
+    "date": "2026-10-11"
+  },
+  {
+    "id": "mccafe",
+    "file": "images/mccafe.webp",
+    "title": "麦咖啡",
+    "tags": ["McCafé", "咖啡", "日常"],
+    "date": "2026-10-11"
+  },
+  {
+    "id": "shubing-kaifanle",
+    "file": "images/shubing-kaifanle.webp",
+    "title": "开饭了",
+    "tags": ["薯饼", "麦当劳", "早餐"],
+    "date": "2026-10-11"
+  },
+  {
+    "id": "shubing-zailaiyige",
+    "file": "images/shubing-zailaiyige.webp",
+    "title": "再来一个",
+    "tags": ["薯饼", "麦当劳", "早餐"],
+    "date": "2026-10-11"
+  },
+  {
+    "id": "shubing-cuicuide",
+    "file": "images/shubing-cuicuide.webp",
+    "title": "脆脆的",
+    "tags": ["薯饼", "麦当劳", "早餐"],
+    "date": "2026-10-11"
+  },
+  {
+    "id": "shubing",
+    "file": "images/shubing.webp",
+    "title": "金黄薯饼",
+    "tags": ["薯饼", "麦当劳", "早餐"],
+    "date": "2026-10-11"
+  },
+  {
     "id": "wayen-niantuoren",
     "file": "images/wayen-niantuoren.webp",
     "title": "Wayen 粘土人",
