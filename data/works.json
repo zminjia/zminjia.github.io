@@ -1,5 +1,47 @@
 [
   {
+    "id": "dasuan-deng",
+    "file": "images/dasuan-deng.webp",
+    "title": "大蒜灯",
+    "tags": ["大蒜", "灯", "日常"],
+    "date": "2026-10-26"
+  },
+  {
+    "id": "xiaoyang",
+    "file": "images/xiaoyang.webp",
+    "title": "小羊",
+    "tags": ["小羊", "动物", "日常"],
+    "date": "2026-10-26"
+  },
+  {
+    "id": "wo-shi-wazi-ma",
+    "file": "images/wo-shi-wazi-ma.webp",
+    "title": "我是袜子吗？",
+    "tags": ["袜子", "日常", "幽默"],
+    "date": "2026-10-26"
+  },
+  {
+    "id": "xingbake-xiao-gaoshi",
+    "file": "images/xingbake-xiao-gaoshi.webp",
+    "title": "星巴克小告示",
+    "tags": ["星巴克", "告示", "咖啡"],
+    "date": "2026-10-26"
+  },
+  {
+    "id": "beizi",
+    "file": "images/beizi.webp",
+    "title": "杯子",
+    "tags": ["杯子", "静物", "日常"],
+    "date": "2026-10-26"
+  },
+  {
+    "id": "lazhu",
+    "file": "images/lazhu.webp",
+    "title": "蜡烛",
+    "tags": ["蜡烛", "静物", "日常"],
+    "date": "2026-10-26"
+  },
+  {
     "id": "guoge-jinian-guangchang",
     "file": "images/guoge-jinian-guangchang.webp",
     "title": "国歌纪念广场",
