@@ -1,5 +1,61 @@
 [
   {
+    "id": "david",
+    "file": "images/david.webp",
+    "title": "David",
+    "tags": ["Q版", "人物", "画画"],
+    "date": "2026-11-27"
+  },
+  {
+    "id": "dj",
+    "file": "images/dj.webp",
+    "title": "DJ",
+    "tags": ["Q版", "人物", "思考"],
+    "date": "2026-11-27"
+  },
+  {
+    "id": "dora",
+    "file": "images/dora.webp",
+    "title": "Dora",
+    "tags": ["Q版", "人物", "微笑"],
+    "date": "2026-11-27"
+  },
+  {
+    "id": "ivy",
+    "file": "images/ivy.webp",
+    "title": "Ivy",
+    "tags": ["Q版", "人物", "点赞"],
+    "date": "2026-11-27"
+  },
+  {
+    "id": "michael",
+    "file": "images/michael.webp",
+    "title": "Michael",
+    "tags": ["Q版", "手办", "人物"],
+    "date": "2026-11-27"
+  },
+  {
+    "id": "thea",
+    "file": "images/thea.webp",
+    "title": "Thea",
+    "tags": ["Q版", "人物", "打招呼"],
+    "date": "2026-11-27"
+  },
+  {
+    "id": "vincent",
+    "file": "images/vincent.webp",
+    "title": "Vincent",
+    "tags": ["Q版", "人物", "打招呼"],
+    "date": "2026-11-27"
+  },
+  {
+    "id": "wendy",
+    "file": "images/wendy.webp",
+    "title": "Wendy",
+    "tags": ["Q版", "人物", "比耶"],
+    "date": "2026-11-27"
+  },
+  {
     "id": "dasuan-deng",
     "file": "images/dasuan-deng.webp",
     "title": "大蒜灯",
